@@ -5,32 +5,34 @@ FROM arm32v7/node:14-alpine
 WORKDIR /app
 
 # Устанавливаем необходимые системные зависимости
-# Добавляем ruby и compass для grunt-contrib-compass
 RUN apk add --no-cache \
     python3 \
     make \
     g++ \
     git \
-    bash \
     ruby \
     ruby-dev
 
 # Устанавливаем Compass (требуется для grunt-contrib-compass)
 RUN gem install compass --no-document
 
-# Копируем все файлы
-COPY . .
+# Копируем package.json и package-lock.json
+COPY package*.json ./
 
-# Делаем скрипт исполняемым и патчим package.json
-RUN chmod +x patch-package.sh && ./patch-package.sh
+# Удаляем phantomjs из зависимостей перед установкой
+RUN npm pkg delete dependencies.phantomjs devDependencies.phantomjs || true
 
-# Устанавливаем зависимости
-RUN npm install --legacy-peer-deps --ignore-scripts
+# Устанавливаем зависимости, игнорируя опциональные и скрипты
+RUN npm install --legacy-peer-deps --no-optional || \
+    npm install --legacy-peer-deps --no-optional --ignore-scripts
 
 # Устанавливаем grunt-cli глобально
 RUN npm install -g grunt-cli
 
-# Открываем порт (Grunt обычно использует 9000)
+# Копируем остальные файлы приложения
+COPY . .
+
+# Открываем порт (Grunt использует 9000)
 EXPOSE 9000
 
 # Запускаем Grunt сервер
