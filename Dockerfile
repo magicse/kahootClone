@@ -1,11 +1,15 @@
+# Используем Alpine 3.17.0 для ARM32v7 и устанавливаем Node.js 10 вручную
+FROM arm32v7/alpine:3.17.0
+
 # Используем Node.js 10 (совместим со старым Grunt и избегает ошибки primordials)
-FROM arm32v7/node:10-alpine
+# FROM arm32v7/node:10-alpine
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
 # Устанавливаем необходимые системные зависимости (БЕЗ Ruby/Compass)
 RUN apk add --no-cache \
+    nodejs=18.20.1-r0 \
     python2 \
     make \
     g++ \
