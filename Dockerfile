@@ -9,7 +9,8 @@ WORKDIR /app
 
 # Устанавливаем необходимые системные зависимости (БЕЗ Ruby/Compass)
 RUN apk add --no-cache \
-    nodejs=18.20.1-r0 \
+    nodejs \
+    npm \
     #python2 \
     python3 \
     make \
